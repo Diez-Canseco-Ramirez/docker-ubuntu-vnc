@@ -120,7 +120,14 @@ RUN cd /etc/ssl && \
     printf 'US\nVirginia\nAlexandria\nDiez Canseco Ramirez\n\n\nalfred.wechselberger@diezcansecoramirez.com\n' | openssl req -x509 -nodes -newkey rsa:2048 -keyout novnc.pem -out novnc.pem -days 365
 RUN cd /etc/ssl && \
     chmod 644 novnc.pem
-RUN iptables -I INPUT -p tcp --dport 6080 -j ACCEPT; iptables -I OUTPUT -p tcp --dport 6080 -j ACCEPT; service iptables save
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y ufw
+    #apt-get install -y iptables
+RUN ufw allow 6080/tcp
+#RUN iptables -I INPUT -p tcp --dport 6080 -j ACCEPT && \
+#    iptables -I OUTPUT -p tcp --dport 6080 -j ACCEPT && \
+#    service iptables save
 #RUN mkdir -p /root/share/ && \
     #apt-get install -y git && \
     #git clone https://github.com/novnc/noVNC
