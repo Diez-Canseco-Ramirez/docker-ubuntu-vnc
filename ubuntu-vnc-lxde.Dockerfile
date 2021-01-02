@@ -110,6 +110,21 @@ RUN apt-get update && \
 #    pacmd set-default-sink v1 && \
 #    pacmd set-default-source v1.monitor
 
+
+# Install components for noVNC access with web-browser
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt -y install novnc websockify python-numpy
+RUN cd /etc/ssl && \
+    # threw up error about cannot load /root/.rnd (possibly investigate further)
+    printf 'US\nVirginia\nAlexandria\nDiez Canseco Ramirez\n\n\nalfred.wechselberger@diezcansecoramirez.com\n' | openssl req -x509 -nodes -newkey rsa:2048 -keyout novnc.pem -out novnc.pem -days 365
+RUN cd /etc/ssl && \
+    chmod 644 novnc.pem
+#RUN mkdir -p /root/share/ && \
+    #apt-get install -y git && \
+    #git clone https://github.com/novnc/noVNC
+
+
 RUN echo "force update"
 
 EXPOSE 5901 8080

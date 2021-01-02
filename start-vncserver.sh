@@ -14,6 +14,10 @@ pacmd set-default-sink v1
 pulseaudio -D
 #pacmd set-default-source v1.monitor
 
+echo "starting web socket for VNC server"
+websockify -D --web=/usr/share/novnc/ --cert=/etc/ssl/novnc.pem 6080 localhost:5901
+
+
 echo "starting flask server"
 # solves some unknown issue
 export LC_ALL=C.UTF-8
