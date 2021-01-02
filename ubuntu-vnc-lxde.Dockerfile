@@ -110,6 +110,8 @@ RUN apt-get update && \
 #    pacmd set-default-sink v1 && \
 #    pacmd set-default-source v1.monitor
 
+RUN echo "force update"
+
 EXPOSE 5901 8080
 ENV USER root
 WORKDIR ~
