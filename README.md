@@ -1,8 +1,6 @@
 README
 ======
 
-Alfred test
-
 This creates a Docker container with Ubuntu 18.04 and [TightVNC Server](https://tightvnc.com).
 
 To build:
