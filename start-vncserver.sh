@@ -11,5 +11,13 @@ echo "starting audio server"
 #pulseaudio -D --system --exit-idle-time=-1
 pacmd load-module module-virtual-sink sink_name=v1
 pacmd set-default-sink v1
-pulseaudio -v
+pulseaudio -D
 #pacmd set-default-source v1.monitor
+
+echo "starting flask server"
+# solves some unknown issue
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+export FLASK_APP=/root/flask_app/hello.py
+# flask needs to bind to 0.0.0.0 otherwise will only listen for local container requests
+flask run --host=0.0.0.0 --port=8080

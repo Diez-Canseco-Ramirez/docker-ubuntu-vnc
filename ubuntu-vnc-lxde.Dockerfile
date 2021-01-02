@@ -79,7 +79,12 @@ RUN touch /root/.Xauthority
 # to satisfy cloud run listening port requirements
 RUN apt-get update -q && \
 	export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends python3-pip python-dev python-qt4
+    apt-get install -y --no-install-recommends python3-pip python-dev python-qt4 python3-venv
+COPY flask_app/ /root/flask_app/
+RUN cd /root/flask_app && \
+    python3 -m venv venv && \
+    #source venv/bin/activate && \
+    pip3 install Flask
 
 # Install simplescreenrecorder
 RUN apt-get update && \
@@ -105,7 +110,7 @@ RUN apt-get update && \
 #    pacmd set-default-sink v1 && \
 #    pacmd set-default-source v1.monitor
 
-EXPOSE 5901
+EXPOSE 5901 8080
 ENV USER root
 WORKDIR ~
 CMD [ "/root/start-vncserver.sh" ]
