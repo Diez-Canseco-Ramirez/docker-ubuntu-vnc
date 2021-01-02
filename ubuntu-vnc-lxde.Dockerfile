@@ -16,8 +16,6 @@ RUN apt-get update -q && \
     apt-get install -y --no-install-recommends xfonts-base xfonts-75dpi xfonts-100dpi && \
     apt-get install -y --no-install-recommends libssl-dev
 
-#RUN apt-get install -y --no-install-recommends python-pip python-dev python-qt4
-
 RUN apt-get autoclean -y && \
     apt-get autoremove -y && \
     apt-get clean && \
@@ -77,6 +75,12 @@ RUN /bin/bash -c "echo -e 'password\npassword\nn' | vncpasswd"
 #RUN chmod go-rwx /root/.vnc
 RUN touch /root/.Xauthority
 
+# Install Flask
+# to satisfy cloud run listening port requirements
+RUN apt-get update -q && \
+	export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends python3-pip python-dev python-qt4
+
 # Install simplescreenrecorder
 RUN apt-get update && \
     export DEBIAN_FRONTEND=noninteractive && \
@@ -89,6 +93,17 @@ RUN chmod a+x /root/start-vncserver.sh
 RUN echo "mycontainer" | tee /etc/hostname
 RUN echo "127.0.0.1	localhost" | tee /etc/hosts
 RUN echo "127.0.0.1	mycontainer" | tee -a /etc/hosts
+
+# Configure audio
+RUN apt-get update && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y install pulseaudio socat && \
+    apt-get -y install alsa-utils
+#RUN pulseaudio -D --system --exit-idle-time=-1
+    #pacmd load-module module-pipe-sink file=/dev/audio format=s16 rate=44100 channels=2
+#RUN pacmd load-module module-virtual-sink sink_name=v1 && \
+#    pacmd set-default-sink v1 && \
+#    pacmd set-default-source v1.monitor
 
 EXPOSE 5901
 ENV USER root
