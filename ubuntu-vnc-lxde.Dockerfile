@@ -91,10 +91,6 @@ RUN apt-get update && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y simplescreenrecorder
 
-
-COPY start-vncserver.sh /root
-RUN chmod a+x /root/start-vncserver.sh
-
 RUN echo "mycontainer" | tee /etc/hostname
 RUN echo "127.0.0.1	localhost" | tee /etc/hosts
 RUN echo "127.0.0.1	mycontainer" | tee -a /etc/hosts
@@ -124,7 +120,7 @@ RUN apt-get update -q && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y ufw
     #apt-get install -y iptables
-RUN ufw allow 6080/tcp
+RUN ufw allow 443/tcp
 #RUN iptables -I INPUT -p tcp --dport 6080 -j ACCEPT && \
 #    iptables -I OUTPUT -p tcp --dport 6080 -j ACCEPT && \
 #    service iptables save
@@ -133,18 +129,50 @@ RUN ufw allow 6080/tcp
     #git clone https://github.com/novnc/noVNC
 
 # Install gsutil
-#RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+#RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y apt-transport-https ca-certificates gnupg
+RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y google-cloud-sdk
 #RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-#RUN apt-get update -q && \
-#    export DEBIAN_FRONTEND=noninteractive && \
-#    apt-get install -y apt-transport-https ca-certificates gnupg
-#RUN apt-get update -q && \
-#    export DEBIAN_FRONTEND=noninteractive && \
-#    apt-get install -y google-cloud-sdk
+
+# Install rclone
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y rclone
+RUN mkdir /root/gcs && \
+    mkdir -p /root/.config/rclone/
+COPY rclone.conf /root/.config/rclone/
+# fixing error about missing fusemount
+RUN apt install -y fuse
+
+# Configure rclone gcs remote
+#RUN printf 'n\ngcs\n12\n\n\n225191797750\n\n4\n2\nfalse\n18\n3\nn\n4/1AY0e-g6GbSD-Fghx2iVNVJmkAAAXI5naeiMz4_UuxL-bzpfoBUa1iKYsszU\ny\nq\n' | rclone config
+
+# Install gcsfuse
+RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s` && \
+    echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y gcsfuse
+COPY cs230-spring2020-8fc12c15efc5.json /root/
+
+# Install ssh
+RUN apt-get update -q && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y ssh
 
 RUN echo "force update"
 
+COPY start-vncserver.sh /root
+RUN chmod a+x /root/start-vncserver.sh
+
 EXPOSE 5901 8080
 ENV USER root
-WORKDIR ~
+WORKDIR /root
 CMD [ "/root/start-vncserver.sh" ]
