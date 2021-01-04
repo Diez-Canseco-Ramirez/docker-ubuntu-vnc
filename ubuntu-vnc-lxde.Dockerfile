@@ -120,7 +120,7 @@ RUN apt-get update -q && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y ufw
     #apt-get install -y iptables
-RUN ufw allow 80/tcp
+RUN ufw allow 6080/tcp
 #RUN iptables -I INPUT -p tcp --dport 6080 -j ACCEPT && \
 #    iptables -I OUTPUT -p tcp --dport 6080 -j ACCEPT && \
 #    service iptables save
