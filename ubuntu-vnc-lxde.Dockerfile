@@ -146,7 +146,7 @@ RUN apt-get update -q && \
     apt-get install -y rclone
 RUN mkdir /root/gcs && \
     mkdir -p /root/.config/rclone/
-COPY rclone.conf /root/.config/rclone/
+#COPY rclone.conf /root/.config/rclone/
 # fixing error about missing fusemount
 RUN apt install -y fuse
 
@@ -160,7 +160,7 @@ RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s` && \
 RUN apt-get update -q && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y gcsfuse
-COPY cs230-spring2020-8fc12c15efc5.json /root/
+#COPY cs230-spring2020-8fc12c15efc5.json /root/
 
 # Install ssh
 RUN apt-get update -q && \
