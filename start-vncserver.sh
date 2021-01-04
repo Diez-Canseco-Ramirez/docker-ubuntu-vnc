@@ -9,7 +9,7 @@ pulseaudio -D
 #pacmd set-default-source v1.monitor
 
 echo "starting web socket for VNC server"
-websockify -D --web=/usr/share/novnc/ --cert=/etc/ssl/novnc.pem 443 localhost:5901
+websockify -D --web=/usr/share/novnc/ --cert=/etc/ssl/novnc.pem 80 localhost:5901
 
 #echo "starting rclone mount"
 #rclone mount gcs:docker-videos /root/gcs/
