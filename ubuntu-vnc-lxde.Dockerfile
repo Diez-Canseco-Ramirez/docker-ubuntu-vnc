@@ -120,7 +120,6 @@ RUN apt-get update -q && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y ufw
     #apt-get install -y iptables
-RUN ufw allow 6080/tcp
 #RUN iptables -I INPUT -p tcp --dport 6080 -j ACCEPT && \
 #    iptables -I OUTPUT -p tcp --dport 6080 -j ACCEPT && \
 #    service iptables save
@@ -169,10 +168,13 @@ RUN apt-get update -q && \
 
 RUN echo "force update"
 
+# Related to noVNC server access
+RUN ufw allow 6080/tcp
+
 COPY start-vncserver.sh /root
 RUN chmod a+x /root/start-vncserver.sh
 
-EXPOSE 5901 8080
+EXPOSE 5901 6080
 ENV USER root
 WORKDIR /root
 CMD [ "/root/start-vncserver.sh" ]
